@@ -15,9 +15,9 @@ const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 sendgrid.setApiKey(SENDGRID_API_KEY);
 
 // Config
-const NUM_TABS = 3;
-const NUM_ATTEMPTS = 2; // Set to -1 to attempt indefinitely
-const ACTUALLY_SEND_EMAIL = false;
+const NUM_TABS = 1;
+const NUM_ATTEMPTS = -1; // Set to -1 to attempt indefinitely
+const ACTUALLY_SEND_EMAIL = true;
 
 // Global vars
 let SUCCESS = false;
@@ -33,7 +33,7 @@ const URLS = {
   LANG_ENGLISH: "https://prenotami.esteri.it/Language/ChangeLanguage?lang=2",
   LOGIN: "https://prenotami.esteri.it/Home?ReturnUrl=%2fServices",
   LANDING: "https://prenotami.esteri.it/UserArea",
-  BOOKING: "https://prenotami.esteri.it/Services/Booking/492", //489 is real URL
+  BOOKING: "https://prenotami.esteri.it/Services/Booking/489", //489 is real URL, 492 is test
 };
 
 const SELECTORS = {
