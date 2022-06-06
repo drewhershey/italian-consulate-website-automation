@@ -125,11 +125,20 @@ async function doInAllTabs(action, pages, message, name) {
   info(`${name} : All Promises resolved. Action complete.`);
 }
 
-async function setLanguageToEnglish({ page, name }) {
+/* async function setLanguageToEnglish({ page, name }) {
   const { LANG_ENGLISH } = URLS;
 
   info(`Setting language to English...`, name);
   await page.goto(LANG_ENGLISH, GOTO_OPTIONS);
+} */
+
+async function checkForGlobalSuccess({ page, name }) {
+  if (!SUCCESS) return false;
+
+  info(`Booking site reached in ${SUCCESS_PAGE}; closing...`, name);
+  await page.close();
+  info(`Page successfully closed.`, name);
+  return true;
 }
 
 async function attemptToBook({ page, name }) {
@@ -137,35 +146,25 @@ async function attemptToBook({ page, name }) {
 
   let attempts = 0;
   while (true) {
-    if (attempts >= NUM_ATTEMPTS) {
-      info(`Maximum attempts reached. Closing page...`, name);
-      await page.close();
-      info(`Page successfully closed.`, name);
-      return false;
-    }
-
-    if (SUCCESS) {
-      info(`Booking site reached in ${SUCCESS_PAGE}; closing...`, name);
-      await page.close();
-      info(`Page successfully closed.`, name);
-      return false;
-    }
+    if (checkForGlobalSuccess({ page, name })) return false;
 
     if (NUM_ATTEMPTS >= 0) {
       info(`Booking attempt: ${attempts + 1}`, name);
       ++attempts;
+      if (attempts >= NUM_ATTEMPTS) {
+        info(`Maximum attempts reached. Closing page...`, name);
+        await page.close();
+        info(`Page successfully closed.`, name);
+
+        return false;
+      }
     }
 
     info(`Awaiting navigation to booking URL...`, name);
     await page.goto(URLS.BOOKING, GOTO_OPTIONS);
     info(`Navigation attempt complete.`, name);
 
-    if (SUCCESS) {
-      info(`Booking site reached in ${SUCCESS_PAGE}; closing...`, name);
-      await page.close();
-      info(`Page successfully closed.`, name);
-      return false;
-    }
+    if (checkForGlobalSuccess({ page, name })) return false;
 
     if (await checkUrl({ page, name }, BOOKING)) {
       SUCCESS = true;
@@ -217,12 +216,12 @@ async function startScript() {
   const tabs = await createTabs(browser);
 
   await tryLogin(tabs);
-  await doInAllTabs(
+  /* await doInAllTabs(
     setLanguageToEnglish,
     tabs,
     "setting language to English in all tabs",
     "setLanguageToEnglish"
-  );
+  ); */
   await doInAllTabs(
     attemptToBook,
     tabs,
