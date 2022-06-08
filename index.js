@@ -31,7 +31,7 @@ const GOTO_OPTIONS = {
 
 const URLS = {
   LANG_ENGLISH: "https://prenotami.esteri.it/Language/ChangeLanguage?lang=2",
-  LOGIN: "https://prenotami.esteri.it/Home?ReturnUrl=%2fServices",
+  LOGIN: "https://prenotami.esteri.it/Home",
   LANDING: "https://prenotami.esteri.it/UserArea",
   BOOKING: "https://prenotami.esteri.it/Services/Booking/489", //489 is real URL, 492 is test
 };
@@ -146,7 +146,7 @@ async function attemptToBook({ page, name }) {
 
   let attempts = 0;
   while (true) {
-    if (checkForGlobalSuccess({ page, name })) return false;
+    if (await checkForGlobalSuccess({ page, name })) return false;
 
     if (NUM_ATTEMPTS >= 0) {
       info(`Booking attempt: ${attempts + 1}`, name);
@@ -164,7 +164,7 @@ async function attemptToBook({ page, name }) {
     await page.goto(URLS.BOOKING, GOTO_OPTIONS);
     info(`Navigation attempt complete.`, name);
 
-    if (checkForGlobalSuccess({ page, name })) return false;
+    if (await checkForGlobalSuccess({ page, name })) return false;
 
     if (await checkUrl({ page, name }, BOOKING)) {
       SUCCESS = true;
@@ -216,7 +216,7 @@ async function startScript() {
   const tabs = await createTabs(browser);
 
   await tryLogin(tabs);
-  /* await doInAllTabs(
+  /*   await doInAllTabs(
     setLanguageToEnglish,
     tabs,
     "setting language to English in all tabs",
